@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Project</title>
+</head>
+
+<body>
+    <div class="main_container">
+        <h1 style="text-align: center;color: #000;">User</h1>
+
+        <section class="input_container" style="margin-top: 50px;">
+            <form id="form">
+                <div class="input_wrap">
+                    <label for="user" style="font-size: 16px;">Select User:</label>
+                    <select type="select" id="selectUser" name="value" for="user" form="form">
+                        <option value="">Select</option>
+                        <option value="User">User</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Officer">Officer</option>
+                    </select>
+                </div>
+
+                <div class="input_wrap">
+                    <label for="email" style="font-size: 16px;">User Name:</label>
+                    <input type="text" placeholder="Enter Email" id="email" name="email" required>
+                </div>
+
+                <div class="input_wrap">
+                    <label for="psw" style="font-size: 16px;">Password:</label>
+                    <input type="password" placeholder="Enter Password" id="psw" name="psw" required>
+                </div>
+
+                <div class="submit_btn" style="display: flex;">
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+
+<script>
+    let form = document.getElementById("form");
+
+    // function for submit button
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formInfo = new FormData(form);
+        const formInfoObj = Object.fromEntries(formInfo.entries());
+        console.log(formInfoObj, 'formInfoObj');
+
+        // firstly checking the the user has selected or not
+        if (formInfoObj.value === "") {
+            return alert('Please Select User')
+        }
+
+        // checking the user email and password as per their USer identity
+        switch (formInfoObj.value) {
+            case "User":
+                if (formInfoObj.email === "one@Email.com") {
+                    if (formInfoObj.psw == "PersonalRailway") {
+                        localStorage.setItem("user", formInfoObj.value);
+                        location.href = "./DetailPage.html";
+                    } else {
+                        alert('Invalid User password')
+                    }
+                } else {
+                    alert('Invalid User email Id')
+                }
+                break;
+
+            case "Supervisor":
+                if (formInfoObj.email === "two@Email.com") {
+                    if (formInfoObj.psw == "PersonalRailway2") {
+                        localStorage.setItem("user", formInfoObj.value);
+                        location.href = "./DetailPage.html";
+                    } else {
+                        alert('Invalid Superviser password')
+                    }
+                } else {
+                    alert('Invalid Superviser email Id')
+                }
+                break;
+
+            case "Officer":
+                if (formInfoObj.email === "three@Email.com") {
+                    if (formInfoObj.psw == "PersonalRailway3") {
+                        localStorage.setItem("user", formInfoObj.value);
+                        location.href = "./OfficerPage.html";
+                    } else {
+                        alert('Invalid Officer password')
+                    }
+                } else {
+                    alert('Invalid Officer email Id')
+                }
+                break;
+
+            default:
+                break;
+        }
+    });
+</script>
+
+</html>

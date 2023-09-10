@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <script href="./script.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project</title>
+</head>
+
+<body>
+    <div class="main_container">
+        <h1 style="text-align: center;color: #000;">Add Details</h1>
+        <section class="input_container">
+            <div class="input_wrap">
+                <label for="section" style="font-size: 16px;">Select section:</label>
+                <select type="select" id="selectSection" name="value" for="section" form="form">
+                    <option value="Select">Select</option>
+                    <option value="Mysore">MYS</option>
+                    <option value="Hassan">HAS</option>
+                    <option value="Ask">ASK</option>
+                </select>
+            </div>
+        </section>
+
+        <div id="mainContainer">
+            <!-- html simple table -->
+            <form id="tblData">
+                <table class="table_wrap">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Work</th>
+                            <th>Emp Id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" id="slno-input" name="slnumber">
+                            </td>
+                            <td>
+                                <input type="text" id="name-input" name="name">
+                            </td>
+                            <td>
+                                <input type="text" id="email-input" + name="email">
+                            </td>
+                            <td>
+                                <input type="text" id="work-input" name="work">
+                            </td>
+                            <td>
+                                <input type="text" id="empId-input" name="emp id">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="submitDetail">
+                    <button id="add-btn" type="submit">Add</button>
+                </div>
+            </form>
+
+            <div id="container">
+                <h2 style="text-align: center">Asset</h2>
+                <table class="table_wrap">
+                    <thead>
+                        <tr>
+                            <th>SlNo</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Work</th>
+                            <th>EmpId</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                <div id="update-container">
+                    <h2 style="text-align: center">Asset Update</h2>
+                    <div>
+                        <input type="text" id="update-name-input">
+                        <input type="text" id="update-email-input">
+                        <input type="text" id="update-work-input">
+                        <input type="text" id="update-empId-input">
+                    </div>
+                    <div style="margin: 10px;">
+                        <button id="update-btn">Update</button>
+                        <button id="cancel-btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" id="goBack">Back to Login</button>
+    </div>
+</body>
+
+<script>
+    let tblData = document.getElementById("tblData");
+    let selectSection = document.getElementById("selectSection");
+    const selectedSectionName = document.getElementById("selectSection");
+
+    document.getElementById("goBack").onclick = function () {
+        location.href = "./index.html";
+    };
+
+    selectSection.addEventListener('change', (e) => {
+        if (e.target.value !== "" && e.target.value !== "Select") {
+            selectedSectionName.value = e.target.value
+            document.getElementById("mainContainer").style.display = "flex"
+            document.getElementById("submitDetail").style.display = "flex"
+            // Initialize table
+        } else {
+            document.getElementById("mainContainer").style.display = "none"
+            document.getElementById("submitDetail").style.display = "none"
+        }
+        console.log('here we go');
+        renderTable();
+    })
+
+    // tblData.addEventListener("submit", (e) => {
+    //     e.preventDefault();
+    //     const formInfo = new FormData(tblData);
+    //     const formInfoObj = Object.fromEntries(formInfo.entries());
+    //     console.log('fahad', formInfoObj)
+    // })
+
+
+    // Variables
+    const slnoInput = document.getElementById("slno-input");
+    const nameInput = document.getElementById("name-input");
+    const emailInput = document.getElementById("email-input");
+    const workInput = document.getElementById("work-input");
+    const empIdInput = document.getElementById("empId-input");
+
+
+    const addBtn = document.getElementById("add-btn");
+    const tableBody = document.getElementById("table-body");
+    const updateNameInput = document.getElementById("update-name-input");
+    const updateEmailInput = document.getElementById("update-email-input");
+    const updateWorkInput = document.getElementById("update-work-input");
+    const updateEmpIdInput = document.getElementById("update-empId-input");
+    const updateBtn = document.getElementById("update-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+    let mysoreLoc = JSON.parse(localStorage.getItem("mysoreLoc")) || [];
+    let hassanLoc = JSON.parse(localStorage.getItem("hassanLoc")) || [];
+    let askLoc = JSON.parse(localStorage.getItem("askLoc")) || [];
+    let users = []
+    let currentUserId = null;
+    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+    // Functions
+    function renderTable() {
+        users.length = 0
+
+        console.log(selectedSectionName.value, 'here for dropodown');
+        if (selectedSectionName.value == 'Mysore') {
+            users = JSON.parse(localStorage.getItem("mysoreLoc")) || []
+        } else if (selectedSectionName.value === 'Hassan') {
+            users = JSON.parse(localStorage.getItem("hassanLoc")) || []
+        } else if (selectedSectionName.value === 'Ask') {
+            users = JSON.parse(localStorage.getItem("askLoc")) || []
+        }
+
+        tableBody.innerHTML = "";
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            const tr = document.createElement("tr");
+            const idTd = document.createElement("td");
+            const nameTd = document.createElement("td");
+            const emailTd = document.createElement("td");
+            const workTd = document.createElement("td");
+            const empIdTd = document.createElement("td");
+            const actionsTd = document.createElement("td");
+            const editBtn = document.createElement("button");
+            editBtn.className = "edit-btn";
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            idTd.innerText = user.id;
+            nameTd.innerText = user.name;
+            emailTd.innerText = user.email;
+            workTd.innerText = user.work;
+            empIdTd.innerText = user.empId;
+            editBtn.innerText = "Edit";
+            deleteBtn.innerText = "Delete";
+            editBtn.addEventListener("click", () => {
+                showUpdateForm(user.id);
+            });
+            deleteBtn.addEventListener("click", () => {
+                deleteUser(user.id);
+            });
+            actionsTd.appendChild(editBtn);
+            actionsTd.appendChild(deleteBtn);
+            tr.appendChild(idTd);
+            tr.appendChild(nameTd);
+            tr.appendChild(emailTd);
+            tr.appendChild(workTd);
+            tr.appendChild(empIdTd);
+            tr.appendChild(actionsTd);
+            tableBody.appendChild(tr);
+        }
+    }
+
+    addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // function addUser() {
+        const slno = slnoInput.value.trim();
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const work = workInput.value.trim();
+        const empId = empIdInput.value.trim();
+        // if (email.match(validRegex)) {
+        if (name && email != null) {
+            // var id = 1;
+            // var val = users.map(function (x) { return x.id; }).indexOf(id);
+            // while (val != -1) {
+            //     id++;
+            //     val = users.map(function (x) { return x.id; }).indexOf(id);
+            // }
+            const user = {
+                // id: id,
+                id: slno,
+                name: name,
+                email: email,
+                work: work,
+                empId: empId,
+            };
+
+            if (selectedSectionName.value === 'Mysore') {
+                mysoreLoc.push(user);
+                localStorage.setItem("mysoreLoc", JSON.stringify(mysoreLoc));
+            } else if (selectedSectionName.value === 'Hassan') {
+                hassanLoc.push(user);
+                localStorage.setItem("hassanLoc", JSON.stringify(hassanLoc));
+            } else if (selectedSectionName.value === 'Ask') {
+                askLoc.push(user);
+                localStorage.setItem("askLoc", JSON.stringify(askLoc));
+            }
+
+            slnoInput.value = "";
+            nameInput.value = "";
+            emailInput.value = "";
+            workInput.value = "";
+            empIdInput.value = "";
+            renderTable();
+        } else {
+            alert("Name is Required");
+        }
+        // } 
+        // else {
+        //     alert("Invalid email address!");
+        // }
+    })
+
+    function updateUser() {
+        if (selectedSectionName.value === 'Mysore') {
+            users = JSON.parse(localStorage.getItem("mysoreLoc")) || []
+        } else if (selectedSectionName.value === 'Hassan') {
+            users = JSON.parse(localStorage.getItem("hassanLoc")) || []
+        } else if (selectedSectionName.value === 'Ask') {
+            users = JSON.parse(localStorage.getItem("askLoc")) || []
+        }
+
+        const name = updateNameInput.value;
+        const email = updateEmailInput.value;
+        const work = updateWorkInput.value;
+        const empId = updateEmpIdInput.value;
+        // if (email.match(validRegex)) {
+        const index = users.findIndex((user) => user.id === currentUserId);
+        if (index !== -1) {
+            users[index].name = name;
+            users[index].email = email;
+            users[index].work = work;
+            users[index].empId = empId;
+
+            if (selectedSectionName.value === 'Mysore') {
+                localStorage.setItem("mysoreLoc", JSON.stringify(users));
+            } else if (selectedSectionName.value === 'Hassan') {
+                localStorage.setItem("hassanLoc", JSON.stringify(users));
+            } else if (selectedSectionName.value === 'Ask') {
+                localStorage.setItem("askLoc", JSON.stringify(users));
+            }
+            hideUpdateForm();
+            renderTable();
+        }
+        // } else {
+        //     alert("Invalid email address!");
+        // }
+    }
+
+    function showUpdateForm(userId) {
+        if (selectedSectionName.value === 'Mysore') {
+            users = JSON.parse(localStorage.getItem("mysoreLoc")) || []
+        } else if (selectedSectionName.value === 'Hassan') {
+            users = JSON.parse(localStorage.getItem("hassanLoc")) || []
+        } else if (selectedSectionName.value === 'Ask') {
+            users = JSON.parse(localStorage.getItem("askLoc")) || []
+        }
+
+        const user = users.find((user) => user.id === userId);
+        if (user) {
+            updateNameInput.value = user.name;
+            updateEmailInput.value = user.email;
+            updateWorkInput.value = user.work;
+            updateEmpIdInput.value = user.empId;
+            currentUserId = user.id;
+            updateBtn.addEventListener("click", updateUser);
+            cancelBtn.addEventListener("click", hideUpdateForm);
+            updateBtn.style.display = "inline-block";
+            cancelBtn.style.display = "inline-block";
+            updateNameInput.style.display = "inline-block";
+            updateEmailInput.style.display = "inline-block";
+            document.getElementById("update-container").style.display = "block";
+        }
+    }
+
+    function hideUpdateForm() {
+        updateNameInput.value = "";
+        updateEmailInput.value = "";
+        updateEmpIdInput.value = "";
+        updateWorkInput.value = "";
+        currentUserId = null;
+        updateBtn.removeEventListener("click", updateUser);
+        cancelBtn.removeEventListener("click", hideUpdateForm);
+        updateBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+        updateNameInput.style.display = "none";
+        updateEmailInput.style.display = "none";
+        document.getElementById("update-container").style.display = "none";
+    }
+
+    function deleteUser(userId) {
+        if (window.confirm("Do you want to delete ?")) {
+            if (selectedSectionName.value === 'Mysore') {
+                users = JSON.parse(localStorage.getItem("mysoreLoc")) || []
+            } else if (selectedSectionName.value === 'Hassan') {
+                users = JSON.parse(localStorage.getItem("hassanLoc")) || []
+            } else if (selectedSectionName.value === 'Ask') {
+                users = JSON.parse(localStorage.getItem("askLoc")) || []
+            }
+
+            users = users.filter((user) => user.id !== userId);
+
+            if (selectedSectionName.value === 'Mysore') {
+                localStorage.setItem("mysoreLoc", JSON.stringify(users))
+            } else if (selectedSectionName.value === 'Hassan') {
+                localStorage.setItem("hassanLoc", JSON.stringify(users))
+            } else if (selectedSectionName.value === 'Ask') {
+                localStorage.setItem("askLoc", JSON.stringify(users))
+            }
+
+            if (users.length == 0) {
+                hideUpdateForm();
+            };
+        }
+        renderTable();
+    }
+</script>
+
+</html>

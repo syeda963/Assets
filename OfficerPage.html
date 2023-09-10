@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <script href="./script.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project</title>
+</head>
+
+<body>
+    <div class="main_container">
+        <h1 style="text-align: center;color: #000;">Add Details</h1>
+        <section class="input_container">
+            <div class="input_wrap">
+                <label for="section" style="font-size: 16px;">Select section:</label>
+                <select type="select" id="selectSection" name="value" for="section" form="form">
+                    <option value="Select">Select</option>
+                    <option value="Mysore">MYS</option>
+                    <option value="Hassan">HAS</option>
+                    <option value="Ask">ASK</option>
+                </select>
+            </div>
+        </section>
+
+        <div id="mainContainer">
+            <div id="container">
+                <h2 style="text-align: center">Asset List</h2>
+                <table class="table_wrap">
+                    <thead>
+                        <tr>
+                            <th>SlNo</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Work</th>
+                            <th>EmpId</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+                <div id="buttonWrap">
+                    <button>Appored</button>
+                    <button>Not Appored</button>
+                </div>
+            </div>
+        </div>
+        <button type="submit" id="goBack">Back to Login</button>
+    </div>
+</body>
+
+<script>
+    let selectSection = document.getElementById("selectSection");
+    const selectedSectionName = document.getElementById("selectSection");
+
+    document.getElementById("goBack").onclick = function () {
+        location.href = "./index.html";
+    };
+
+    selectSection.addEventListener('change', (e) => {
+        if (e.target.value !== "" && e.target.value !== "Select") {
+            selectedSectionName.value = e.target.value
+            document.getElementById("mainContainer").style.display = "flex"
+        } else {
+            document.getElementById("mainContainer").style.display = "none"
+        }
+        // Initialize table
+        renderTable();
+    })
+
+    // Variables
+    const slnoInput = document.getElementById("slno-input");
+    const nameInput = document.getElementById("name-input");
+    const emailInput = document.getElementById("email-input");
+    const workInput = document.getElementById("work-input");
+    const empIdInput = document.getElementById("empId-input");
+
+    const addBtn = document.getElementById("add-btn");
+    const tableMainBody = document.getElementById("table-body");
+    const updateNameInput = document.getElementById("update-name-input");
+    const updateEmailInput = document.getElementById("update-email-input");
+    const updateWorkInput = document.getElementById("update-work-input");
+    const updateEmpIdInput = document.getElementById("update-empId-input");
+    const updateBtn = document.getElementById("update-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+    let users = []
+
+    // Functions
+    function renderTable() {
+        users.length = 0
+
+        if (selectedSectionName.value == 'Mysore') {
+            users = JSON.parse(localStorage.getItem("mysoreLoc")) || []
+        } else if (selectedSectionName.value === 'Hassan') {
+            users = JSON.parse(localStorage.getItem("hassanLoc")) || []
+        } else if (selectedSectionName.value === 'Ask') {
+            users = JSON.parse(localStorage.getItem("askLoc")) || []
+        }
+
+
+        if (users.length > 0) {
+            tableMainBody.innerHTML = "";
+            for (let i = 0; i < users.length; i++) {
+                document.getElementById("buttonWrap").style.display = "flex"
+                const user = users[i];
+                const tr = document.createElement("tr");
+                const idTd = document.createElement("td");
+                const nameTd = document.createElement("td");
+                const emailTd = document.createElement("td");
+                const workTd = document.createElement("td");
+                const empIdTd = document.createElement("td");
+                idTd.innerText = user.id;
+                nameTd.innerText = user.name;
+                emailTd.innerText = user.email;
+                workTd.innerText = user.work;
+                empIdTd.innerText = user.empId;
+                tr.appendChild(idTd);
+                tr.appendChild(nameTd);
+                tr.appendChild(emailTd);
+                tr.appendChild(workTd);
+                tr.appendChild(empIdTd);
+                tableMainBody.appendChild(tr);
+            }
+        } else {
+            tableMainBody.innerHTML = "";
+            document.getElementById("buttonWrap").style.display = "none"
+            initTable(users.length === 0)
+        }
+    }
+
+    function initTable(showEmpty = true) {
+        tableMainBody.innerHTML = '';
+        if (showEmpty) {
+            var newRow = tableMainBody.insertRow();
+            newRow.innerHTML =
+                '<tr><td class="no-data" colspan="8">No Data</td></tr>';
+        }
+        return tableMainBody;
+    }
+</script>
+
+</html>
